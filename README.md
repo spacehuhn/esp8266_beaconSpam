@@ -16,3 +16,13 @@ Use it only for testing purposes on your own devices and networks!
 
 Please check the legal regulations in your country before using it. Jamming transmitters are illegal in most countries 
 and this device can fall into the same category (even if it’s technically not the same).
+
+
+## License
+
+This project is licensed under the MIT License - see the [license file](LICENSE) file for details
+
+## Sources
+ 
+The 50 default SSIDs are from http://www.makeuseof.com/tag/50-funny-wi-fi-names-network-ssid/  
+The ssid.txt is from https://wigle.net/stats#ssidstats  
