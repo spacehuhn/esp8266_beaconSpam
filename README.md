@@ -1,6 +1,8 @@
 # esp8266_beaconSpam
 Creates up to a thousand WiFi access points with custom SSIDs.
 
+[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=RCHANSVSX9M8C)
+
 **Note:** This is a side project emerged from my [ESP8266 Deauther](https://github.com/spacehuhn/esp8266_deauther).  
 Please have a look at this project first, the installation steps are the same.  
 
