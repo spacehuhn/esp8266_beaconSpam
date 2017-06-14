@@ -2,7 +2,7 @@
 Creates up to a thousand WiFi access points with custom SSIDs.  
 
 [**Support me and my projects on Patreon!**  
-<img width="450" alt="Support me on Patreon" src="https://c4.patreon.com/toolbox/patreon.png">](https://www.patreon.com/spacehuhn)  
+<img width="450" alt="Support me on Patreon" src="https://c5.patreon.com/external/logo/downloads_wordmark_navy.png">](https://www.patreon.com/spacehuhn)  
 
 
 
