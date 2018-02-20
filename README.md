@@ -30,3 +30,17 @@ This project is licensed under the MIT License - see the [license file](LICENSE)
  
 The 50 default SSIDs are from http://www.makeuseof.com/tag/50-funny-wi-fi-names-network-ssid/  
 The ssid.txt is from https://wigle.net/stats#ssidstats  
+## Install Instructions
+This guide will assume you already have the Arduino IDE and the ESP8266 board manager installed
+
+FIRST: 
+ Clone this repository or download it using 'Download as Zip'
+
+SECOND:
+ Open the ino file in esp8266_beaconSpam in Arduino IDE 
+
+THIRD:
+ Plug in your NodeMCU or your ESP8266 into your computer and click 'Flash'
+
+FOURTH:
+ When its finished unplug and wire the circuit up as you have been told above 
