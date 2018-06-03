@@ -83,7 +83,6 @@ const char ssids[] PROGMEM = {
 
 // run-time variables
 char emptySSID[32];
-char tmpSSID[33];
 uint8_t channelIndex = 0;
 uint8_t macAddr[6];
 uint8_t wifi_channel = 1;
@@ -240,10 +239,17 @@ void loop() {
       macAddr[5] = ssidNum;
       ssidNum++;
 
+      // write MAC address into beacon frame
       memcpy(&beaconPacket[10], macAddr, 6);
       memcpy(&beaconPacket[16], macAddr, 6);
+
+      // reset SSID
       memcpy(&beaconPacket[38], emptySSID, 32);
+
+      // write new SSID into beacon frame
       memcpy_P(&beaconPacket[38], &ssids[i], j - 1);
+
+      // set channel for beacon frame
       beaconPacket[82] = wifi_channel;
 
       // sent out packet
