@@ -13,6 +13,19 @@
 Support the development of this project by purchasing one of the <a href="https://github.com/spacehuhn/deauther2.0/wiki/Supported-Devices">official deauther boards</a>.<br/>Or become a patron on <a href="https://patreon.com/spacehuhn" target="_blank">patreon.com/spacehuhn</a>.</b>
 </p>
 
+## Changes
+
+I wrote the initial sketch in 2017 and it had some flaws.  
+Here are the latest changes (06/2018):  
+- Now works with ESP8266 Arduino Core v2.0.0 or newer without **any** further modification
+- Fixed the bug that the SSIDs are not shown correctly on IOS
+- No need for a SD card anymore to save hundrets of SSIDs, they are all stored in the PROGMEM now
+
+Using the SD card might be useful for some people... but thanks to the magic of git, you can still view the old repository here: https://github.com/spacehuhn/esp8266_beaconSpam/tree/1e17040c4d51ce9d1fa5e727689a8f01109c0ddf
+
+I didn't publish a .bin file on purpose. This project is easy to create with Arduino and everyone should be able to get it working!  
+The goal of this is to motivate people to get into hacking, electronics and Arduino, so don't be lazy and start making your own stuff! :D
+
 ## About
 
 ![network scanner](https://raw.githubusercontent.com/spacehuhn/esp8266_beaconSpam/master/img/networkscanner.jpg)
