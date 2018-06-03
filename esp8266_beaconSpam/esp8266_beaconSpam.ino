@@ -18,7 +18,7 @@ extern "C" {
 // ==================== //
 
 // ===== Settings ===== //
-const uint8_t channels[] = {1, 6, 11}; // used Wi-Fi channels (1-14)
+const uint8_t channels[] = {6/*, 1, 11*/}; // used Wi-Fi channels (1-14)
 const bool wpa2 = false; // WPA2 networks
 
 /*
@@ -146,13 +146,15 @@ uint8_t beaconPacket[109] = {
 
 // goes to next channel
 void nextChannel() {
-  uint8_t ch = channels[channelIndex];
-  channelIndex++;
-  if (channelIndex > sizeof(channels)) channelIndex = 0;
-
-  if (ch != wifi_channel && ch >= 1 && ch <= 14) {
-    wifi_channel = ch;
-    wifi_set_channel(wifi_channel);
+  if(sizeof(channels) > 1){
+    uint8_t ch = channels[channelIndex];
+    channelIndex++;
+    if (channelIndex > sizeof(channels)) channelIndex = 0;
+  
+    if (ch != wifi_channel && ch >= 1 && ch <= 14) {
+      wifi_channel = ch;
+      wifi_set_channel(wifi_channel);
+    }
   }
 }
 
@@ -194,7 +196,7 @@ void setup() {
   wifi_set_opmode(STATION_MODE);
 
   // set channel
-  nextChannel();
+  wifi_set_channel(channels[0]);
 
   // print out saved SSIDs
   Serial.println("SSIDs:");
@@ -223,7 +225,8 @@ void loop() {
     int ssidNum = 1;
     char tmp;
     int ssidsLen = strlen_P(ssids);
-
+    bool sent = false;
+    
     // go to next channel
     nextChannel();
 
@@ -253,8 +256,12 @@ void loop() {
       beaconPacket[82] = wifi_channel;
 
       // sent out packet
-      while (wifi_send_pkt_freedom(beaconPacket, packetSize, 0) != 0) delay(1);
-      packetCounter++;
+      sent = false;
+      for(int k=0;k<5 && !sent;k++){
+        sent = wifi_send_pkt_freedom(beaconPacket, packetSize, 0) == 0;
+        delay(1);
+      }
+      if(sent) packetCounter++;
 
       i += j;
     }
