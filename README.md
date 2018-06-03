@@ -1,7 +1,7 @@
 # ESP8266 Beacon Spam
 
 
-<p align="center"><img alt="project-logo" width="200" src="https://raw.githubusercontent.com/spacehuhn/esp8266_beaconSpam/master/img/beacon_spam.png"></p>
+<p align="center"><img alt="project-logo" height="200" src="https://raw.githubusercontent.com/spacehuhn/esp8266_beaconSpam/master/img/beacon_spam.png"></p>
  
 <p align="center">
 🐦 <a href="https://twitter.com/spacehuhn">Twitter</a>
