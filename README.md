@@ -1,5 +1,5 @@
 # ESP8266 Beacon Spam
-Advertise hundrets of WiFi access points with custom SSIDs.  
+
 
 <p align="center"><img alt="project-logo" width="200" src="https://raw.githubusercontent.com/spacehuhn/esp8266_beaconSpam/master/img/beacon_spam.png"></p>
  
@@ -7,8 +7,10 @@ Advertise hundrets of WiFi access points with custom SSIDs.
 🐦 <a href="https://twitter.com/spacehuhn">Twitter</a>
 | 📺 <a href="https://www.youtube.com/channel/UCFmjA6dnjv-phqrFACyI8tw">YouTube</a>
 | 🌍 <a href="https://spacehuhn.de">spacehuhn.de</a><br/>
-<br />
-<b>Support the development of this project by purchasing one of the <a href="https://github.com/spacehuhn/deauther2.0/wiki/Supported-Devices">official deauther boards</a>.<br/>Or become a patron on <a href="https://patreon.com/spacehuhn" target="_blank">patreon.com/spacehuhn</a>.</b>
+<br>
+<b>Advertise hundrets of WiFi access points with custom SSIDs.<br>
+<br>
+Support the development of this project by purchasing one of the <a href="https://github.com/spacehuhn/deauther2.0/wiki/Supported-Devices">official deauther boards</a>.<br/>Or become a patron on <a href="https://patreon.com/spacehuhn" target="_blank">patreon.com/spacehuhn</a>.</b>
 </p>
 
 ## About
@@ -36,7 +38,7 @@ Some people might interpret that as a "Jammer" and those are illegal. But this p
 - Edit the SSIDs if you want
 - Select the correct Board under Tools > Board, the serial (COM) port your device is using and hit upload!
 
-If you have troubles uploading, have a look at the [installation guide](https://github.com/spacehuhn/esp8266_deauther/wiki/Installation#drivers-and-com-port) on the Deauther Wiki. There you will also find drivers for the most common USB-Serial chips, that you might need to install.  
+If you have troubles uploading, have a look at the [installation guide](https://github.com/spacehuhn/esp8266_deauther/wiki/Installation#drivers-and-com-port) on the Deauther Wiki. There you will also find drivers for the most common USB-Serial chips.  
 Again, this is for the Deauther and not for this project, but the hardware (ESP8266) is the same and you will find a lot of trouble-shooting infos on the Wiki there! :)  
 
 ## License
