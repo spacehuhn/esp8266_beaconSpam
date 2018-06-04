@@ -1,7 +1,7 @@
 # ESP8266 Beacon Spam
 
 
-<p align="center"><img alt="project-logo" height="200" src="https://raw.githubusercontent.com/spacehuhn/esp8266_beaconSpam/master/img/beacon_spam.png"></p>
+<p align="center"><img alt="project-logo" width="300" src="https://raw.githubusercontent.com/spacehuhn/esp8266_beaconSpam/master/img/beacon_spam.png"></p>
  
 <p align="center">
 🐦 <a href="https://twitter.com/spacehuhn">Twitter</a>
@@ -10,7 +10,7 @@
 <br>
 <b>Advertise hundrets of WiFi access points with custom SSIDs.<br>
 <br>
-Support the development of this project by purchasing one of the <a href="https://github.com/spacehuhn/deauther2.0/wiki/Supported-Devices">official deauther boards</a>.<br/>Or become a patron on <a href="https://patreon.com/spacehuhn" target="_blank">patreon.com/spacehuhn</a>.</b>
+Support the development of this project by purchasing one of the <a href="https://github.com/spacehuhn/esp8266_deauther/wiki/Supported-Devices">official deauther boards</a>.<br/>Or become a patron on <a href="https://patreon.com/spacehuhn" target="_blank">patreon.com/spacehuhn</a>.</b>
 </p>
 
 ## Changes
