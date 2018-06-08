@@ -57,6 +57,9 @@ Some people might interpret that as a "Jammer" and those are illegal. But this p
 If you have troubles uploading, have a look at the [installation guide](https://github.com/spacehuhn/esp8266_deauther/wiki/Installation#drivers-and-com-port) on the Deauther Wiki. There you will also find drivers for the most common USB-Serial chips.  
 Again, this is for the Deauther and not for this project, but the hardware (ESP8266) is the same and you will find a lot of trouble-shooting infos on the Wiki there! :)  
 
+Here's also a video tutorial :)  
+[![$5 WiFi Spammer](https://img.youtube.com/vi/Zq7QNpPxCqE/0.jpg)](https://www.youtube.com/watch?v=Zq7QNpPxCqE)
+
 ## License
 
 This project is licensed under the MIT License - see the [license file](LICENSE) file for details
