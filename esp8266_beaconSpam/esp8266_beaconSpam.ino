@@ -236,7 +236,7 @@ void loop() {
       do {
         tmp = pgm_read_byte(ssids + i + j);
         j++;
-      } while (tmp != '\n' && j < 32 && i + j < ssidsLen);
+      } while (tmp != '\n' && j <= 32 && i + j < ssidsLen);
 
       // set MAC address
       macAddr[5] = ssidNum;
