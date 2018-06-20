@@ -256,8 +256,7 @@ void loop() {
       beaconPacket[82] = wifi_channel;
 
       // sent out packet
-      sent = false;
-      for(int k=0;k<5 && !sent;k++){
+      for(int k=0;k<3;k++){
         packetCounter += wifi_send_pkt_freedom(beaconPacket, packetSize, 0) == 0;
         delay(1);
       }
