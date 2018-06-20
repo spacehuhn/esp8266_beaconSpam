@@ -18,7 +18,7 @@ extern "C" {
 // ==================== //
 
 // ===== Settings ===== //
-const uint8_t channels[] = {6/*, 1, 11*/}; // used Wi-Fi channels (1-14)
+const uint8_t channels[] = {1, 6, 11}; // used Wi-Fi channels (1-14)
 const bool wpa2 = false; // WPA2 networks
 
 /*
@@ -102,7 +102,7 @@ uint8_t beaconPacket[109] = {
   // Fixed parameters
   /* 22 - 23 */ 0x00, 0x00, // Fragment & sequence number (will be done by the SDK)
   /* 24 - 31 */ 0x83, 0x51, 0xf7, 0x8f, 0x0f, 0x00, 0x00, 0x00, // Timestamp
-  /* 32 - 33 */ 0x64, 0x00, // Interval: 0x64, 0x00 => every 100ms - 0xe8, 0x03 => every 1s
+  /* 32 - 33 */ 0xe8, 0x03, // Interval: 0x64, 0x00 => every 100ms - 0xe8, 0x03 => every 1s
   /* 34 - 35 */ 0x31, 0x00, // capabilities Tnformation
 
   // Tagged parameters
@@ -258,10 +258,9 @@ void loop() {
       // sent out packet
       sent = false;
       for(int k=0;k<5 && !sent;k++){
-        sent = wifi_send_pkt_freedom(beaconPacket, packetSize, 0) == 0;
+        packetCounter += wifi_send_pkt_freedom(beaconPacket, packetSize, 0) == 0;
         delay(1);
       }
-      if(sent) packetCounter++;
 
       i += j;
     }
