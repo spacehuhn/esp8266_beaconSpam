@@ -5,21 +5,10 @@
   ===========================================
 */
 
-// ===== Includes ===== //
-#include <ESP8266WiFi.h>
-
-extern "C" {
-#include "user_interface.h"
-  typedef void (*freedom_outside_cb_t)(uint8 status);
-  int wifi_register_send_pkt_freedom_cb(freedom_outside_cb_t cb);
-  void wifi_unregister_send_pkt_freedom_cb(void);
-  int wifi_send_pkt_freedom(uint8 *buf, int len, bool sys_seq);
-}
-// ==================== //
-
 // ===== Settings ===== //
-const uint8_t channels[] = {1, 6, 11}; // used Wi-Fi channels (1-14)
+const uint8_t channels[] = {1, 6, 11}; // used Wi-Fi channels (available: 1-14)
 const bool wpa2 = false; // WPA2 networks
+const bool appendSpaces = true; // makes all SSIDs 32 characters long to improve performance
 
 /*
   SSIDs:
@@ -79,6 +68,18 @@ const char ssids[] PROGMEM = {
   "The Creep Next Door\n"
   "Ye Olde Internet\n"
 };
+// ==================== //
+
+// ===== Includes ===== //
+#include <ESP8266WiFi.h>
+
+extern "C" {
+#include "user_interface.h"
+  typedef void (*freedom_outside_cb_t)(uint8 status);
+  int wifi_register_send_pkt_freedom_cb(freedom_outside_cb_t cb);
+  void wifi_unregister_send_pkt_freedom_cb(void);
+  int wifi_send_pkt_freedom(uint8 *buf, int len, bool sys_seq);
+}
 // ==================== //
 
 // run-time variables
@@ -238,6 +239,8 @@ void loop() {
         j++;
       } while (tmp != '\n' && j <= 32 && i + j < ssidsLen);
 
+      uint8_t ssidLen = j - 1;
+      
       // set MAC address
       macAddr[5] = ssidNum;
       ssidNum++;
@@ -250,15 +253,34 @@ void loop() {
       memcpy(&beaconPacket[38], emptySSID, 32);
 
       // write new SSID into beacon frame
-      memcpy_P(&beaconPacket[38], &ssids[i], j - 1);
+      memcpy_P(&beaconPacket[38], &ssids[i], ssidLen);
 
       // set channel for beacon frame
       beaconPacket[82] = wifi_channel;
 
-      // sent out packet
-      for(int k=0;k<3;k++){
-        packetCounter += wifi_send_pkt_freedom(beaconPacket, packetSize, 0) == 0;
-        delay(1);
+      // send packet
+      if(appendSpaces){
+        for(int k=0;k<3;k++){
+          packetCounter += wifi_send_pkt_freedom(beaconPacket, packetSize, 0) == 0;
+          delay(1);
+        }
+      }
+      
+      // remove spaces
+      else {
+        uint16_t tmpPacketSize = (109 - 32) + ssidLen; // calc size
+        uint8_t* tmpPacket = new uint8_t[tmpPacketSize]; // create packet buffer
+        memcpy(&tmpPacket[0], &beaconPacket[0], 37 + ssidLen); // copy first half of packet into buffer
+        tmpPacket[37] = ssidLen; // update SSID length byte
+        memcpy(&tmpPacket[38 + ssidLen], &beaconPacket[70], 39); // copy second half of packet into buffer
+
+        // send packet
+        for(int k=0;k<3;k++){
+          packetCounter += wifi_send_pkt_freedom(tmpPacket, tmpPacketSize, 0) == 0;
+          delay(1);
+        }
+
+        delete tmpPacket; // free memory of allocated buffer
       }
 
       i += j;
