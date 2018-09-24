@@ -1,10 +1,3 @@
-/*
-  ===========================================
-       Copyright (c) 2018 Stefan Kremser
-              github.com/spacehuhn
-  ===========================================
-*/
-
 // ===== Settings ===== //
 const uint8_t channels[] = {1, 6, 11}; // used Wi-Fi channels (available: 1-14)
 const bool wpa2 = false; // WPA2 networks
@@ -17,21 +10,21 @@ const bool appendSpaces = true; // makes all SSIDs 32 characters long to improve
   - don't add duplicates! You have to change one character at least
 */
 const char ssids[] PROGMEM = {
-  "Mom Use This One\n"
-  "Abraham Linksys\n"
-  "Benjamin FrankLAN\n"
-  "Martin Router King\n"
-  "John Wilkes Bluetooth\n"
-  "Pretty Fly for a Wi-Fi\n"
-  "Bill Wi the Science Fi\n"
-  "I Believe Wi Can Fi\n"
-  "Tell My Wi-Fi Love Her\n"
-  "No More Mister Wi-Fi\n"
-  "LAN Solo\n"
-  "The LAN Before Time\n"
-  "Silence of the LANs\n"
-  "House LANister\n"
-  "Winternet Is Coming\n"
+  "大家好\n"
+  "我是来自\n"
+  "九号公寓\n"
+  "某个宿舍\n"
+  "的一名\n"
+  "普普通通\n"
+  "的学生\n"
+  "在这里\n"
+  "我想说\n"
+  "不是针对\n"
+  "你们其中一个\n"
+  "而是说\n"
+  "在座的各位\n"
+  "你们全都是\n"
+  "垃圾\n"
   "Ping’s Landing\n"
   "The Ping in the North\n"
   "This LAN Is My LAN\n"
@@ -68,19 +61,19 @@ const char ssids[] PROGMEM = {
   "The Creep Next Door\n"
   "Ye Olde Internet\n"
 };
-// ==================== //
 
-// ===== Includes ===== //
-#include <ESP8266WiFi.h>
+
+#include "WiFi.h"
 
 extern "C" {
-#include "user_interface.h"
-  typedef void (*freedom_outside_cb_t)(uint8 status);
-  int wifi_register_send_pkt_freedom_cb(freedom_outside_cb_t cb);
-  void wifi_unregister_send_pkt_freedom_cb(void);
-  int wifi_send_pkt_freedom(uint8 *buf, int len, bool sys_seq);
+#include "esp_wifi.h"
+  //typedef void (*freedom_outside_cb_t)(uint8 status);
+  //int wifi_register_send_pkt_freedom_cb(freedom_outside_cb_t cb);
+  //void wifi_unregister_send_pkt_freedom_cb(void);
+  //int wifi_send_pkt_freedom(uint8 *buf, int len, bool sys_seq);
+  esp_err_t esp_wifi_set_channel(uint8_t primary, wifi_second_chan_t second);
+  esp_err_t esp_wifi_80211_tx(wifi_interface_t ifx, const void *buffer, int len, bool en_sys_seq);
 }
-// ==================== //
 
 // run-time variables
 char emptySSID[32];
@@ -147,14 +140,15 @@ uint8_t beaconPacket[109] = {
 
 // goes to next channel
 void nextChannel() {
-  if(sizeof(channels) > 1){
+  if (sizeof(channels) > 1) {
     uint8_t ch = channels[channelIndex];
     channelIndex++;
     if (channelIndex > sizeof(channels)) channelIndex = 0;
-  
+
     if (ch != wifi_channel && ch >= 1 && ch <= 14) {
       wifi_channel = ch;
-      wifi_set_channel(wifi_channel);
+      //wifi_set_channel(wifi_channel);
+      esp_wifi_set_channel(wifi_channel, WIFI_SECOND_CHAN_NONE);
     }
   }
 }
@@ -169,9 +163,8 @@ void setup() {
   // create empty SSID
   for (int i = 0; i < 32; i++)
     emptySSID[i] = ' ';
-
   // for random generator
-  randomSeed(os_random());
+  randomSeed(1);
 
   // set packetSize
   packetSize = sizeof(beaconPacket);
@@ -184,20 +177,16 @@ void setup() {
 
   // generate random mac address
   randomMac();
-
-  // start serial
+  
+  // put your setup code here, to run once:
   Serial.begin(115200);
-  Serial.println();
-
-  // get time
-  currentTime = millis();
-
-  // start WiFi
-  WiFi.mode(WIFI_OFF);
-  wifi_set_opmode(STATION_MODE);
+  //say hi
+  Serial.println("Hello,NodeMCU!");
+  //change WiFi mode
+  WiFi.mode(WIFI_MODE_STA);
 
   // set channel
-  wifi_set_channel(channels[0]);
+  esp_wifi_set_channel(channels[0], WIFI_SECOND_CHAN_NONE);
 
   // print out saved SSIDs
   Serial.println("SSIDs:");
@@ -207,13 +196,10 @@ void setup() {
     Serial.print((char)pgm_read_byte(ssids + i));
     i++;
   }
-  
-  Serial.println();
-  Serial.println("Started \\o/");
-  Serial.println();
 }
 
 void loop() {
+  // put your main code here, to run repeatedly:
   currentTime = millis();
 
   // send out SSIDs
@@ -227,7 +213,7 @@ void loop() {
     char tmp;
     int ssidsLen = strlen_P(ssids);
     bool sent = false;
-    
+
     // go to next channel
     nextChannel();
 
@@ -240,7 +226,7 @@ void loop() {
       } while (tmp != '\n' && j <= 32 && i + j < ssidsLen);
 
       uint8_t ssidLen = j - 1;
-      
+
       // set MAC address
       macAddr[5] = ssidNum;
       ssidNum++;
@@ -259,25 +245,27 @@ void loop() {
       beaconPacket[82] = wifi_channel;
 
       // send packet
-      if(appendSpaces){
-        for(int k=0;k<3;k++){
-          packetCounter += wifi_send_pkt_freedom(beaconPacket, packetSize, 0) == 0;
+      if (appendSpaces) {
+        for (int k = 0; k < 3; k++) {
+          //packetCounter += wifi_send_pkt_freedom(beaconPacket, packetSize, 0) == 0;
+          Serial.printf("size: %d \n", packetSize);
+          packetCounter += esp_wifi_80211_tx(ESP_IF_WIFI_STA, beaconPacket, packetSize, 0) == 0;
           delay(1);
         }
       }
-      
+
       // remove spaces
       else {
-        
-        uint16_t tmpPacketSize = (packetSize - 32) + ssidLen; // calc size
+        uint16_t tmpPacketSize = (109 - 32) + ssidLen; // calc size
         uint8_t* tmpPacket = new uint8_t[tmpPacketSize]; // create packet buffer
-        memcpy(&tmpPacket[0], &beaconPacket[0], 38 + ssidLen); // copy first half of packet into buffer
+        memcpy(&tmpPacket[0], &beaconPacket[0], 37 + ssidLen); // copy first half of packet into buffer
         tmpPacket[37] = ssidLen; // update SSID length byte
-        memcpy(&tmpPacket[38 + ssidLen], &beaconPacket[70], wpa2 ? 39 : 13); // copy second half of packet into buffer
+        memcpy(&tmpPacket[38 + ssidLen], &beaconPacket[70], 39); // copy second half of packet into buffer
 
         // send packet
-        for(int k=0;k<3;k++){
-          packetCounter += wifi_send_pkt_freedom(tmpPacket, tmpPacketSize, 0) == 0;
+        for (int k = 0; k < 3; k++) {
+          //packetCounter += wifi_send_pkt_freedom(tmpPacket, tmpPacketSize, 0) == 0;
+          packetCounter += esp_wifi_80211_tx(ESP_IF_WIFI_STA, tmpPacket, tmpPacketSize, 0) == 0;
           delay(1);
         }
 
