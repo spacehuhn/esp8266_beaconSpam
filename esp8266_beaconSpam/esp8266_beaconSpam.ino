@@ -268,11 +268,12 @@ void loop() {
       
       // remove spaces
       else {
-        uint16_t tmpPacketSize = (109 - 32) + ssidLen; // calc size
+        
+        uint16_t tmpPacketSize = (packetSize - 32) + ssidLen; // calc size
         uint8_t* tmpPacket = new uint8_t[tmpPacketSize]; // create packet buffer
-        memcpy(&tmpPacket[0], &beaconPacket[0], 37 + ssidLen); // copy first half of packet into buffer
+        memcpy(&tmpPacket[0], &beaconPacket[0], 38 + ssidLen); // copy first half of packet into buffer
         tmpPacket[37] = ssidLen; // update SSID length byte
-        memcpy(&tmpPacket[38 + ssidLen], &beaconPacket[70], 39); // copy second half of packet into buffer
+        memcpy(&tmpPacket[38 + ssidLen], &beaconPacket[70], wpa2 ? 39 : 13); // copy second half of packet into buffer
 
         // send packet
         for(int k=0;k<3;k++){
