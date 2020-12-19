@@ -8,10 +8,12 @@
 | 📺 <a href="https://www.youtube.com/channel/UCFmjA6dnjv-phqrFACyI8tw">YouTube</a>
 | 🌍 <a href="https://spacehuhn.de">spacehuhn.de</a><br/>
 <br>
-<b>Advertise hundrets of WiFi access points with custom SSIDs.<br>
+p<b>Advertise hundreds of WiFi access points with custom SSIDs.<br>
 <br>
 Support the development of this project by purchasing one of the <a href="https://github.com/spacehuhn/esp8266_deauther/wiki/Supported-Devices">official deauther boards</a>.<br/>Or become a patron on <a href="https://patreon.com/spacehuhn" target="_blank">patreon.com/spacehuhn</a>.</b>
 </p>
+
+ESP32 version by [@Tnze](https://github.com/Tnze): [esp32_beaconSpam](https://github.com/Tnze/esp32_beaconSpam).  
 
 ## Changes
 
@@ -34,15 +36,15 @@ This project emerged from the [ESP8266 Deauther](https://github.com/spacehuhn/es
 But while the Deauther is very complex and might seem intimidating to an Arduino beginner, this project is simple, hackable and easy get running!  
 
 The Arduino sketch comes with 50 default SSID names, but you can edit that list easily in the source code :).  
-By constantly broadcasting the so called beacon frames, your standard WiFi scanner will think there are active networks nearby and adds them to the list.  
+By constantly broadcasting the so-called beacon frames, your standard WiFi scanner will think there are active networks nearby and adds them to the list.  
 In reality though, it is just advertising these network names without actually creating them. So there is no way you could connect to one of the "created" networks.  
 
 It is using the `wifi_send_pkt_freedom` function in the ESP8266 Arduino Core SDK. This function allows packet injection for specific Wi-Fi frames.  
 
 ## Disclaimer
 
-Even if it is more of a fun party trick than something that could actually do any harm, **please use it respectively!**
-Some people might interpret that as a "Jammer" and those are illegal. But this porject here is just sending a bunch of WiFi packets through the air and works within the 802.11 Wi-Fi standard.
+Even if it is more of a fun party trick than something that could actually do any harm, **please use it respectfully!**
+Some people might interpret this as a "Jammer" and those are illegal. But this project is just sending a bunch of WiFi packets through the air and works within the 802.11 Wi-Fi standard.
 
 ## Installation
 
@@ -54,8 +56,11 @@ Some people might interpret that as a "Jammer" and those are illegal. But this p
 - Edit the SSIDs if you want
 - Select the correct Board under Tools > Board, the serial (COM) port your device is using and hit upload!
 
-If you have troubles uploading, have a look at the [installation guide](https://github.com/spacehuhn/esp8266_deauther/wiki/Installation#drivers-and-com-port) on the Deauther Wiki. There you will also find drivers for the most common USB-Serial chips.  
-Again, this is for the Deauther and not for this project, but the hardware (ESP8266) is the same and you will find a lot of trouble-shooting infos on the Wiki there! :)  
+If you have trouble uploading, have a look at the [installation guide](https://github.com/spacehuhn/esp8266_deauther/wiki/Installation#drivers-and-com-port) on the Deauther Wiki. There you will also find drivers for the most common USB-Serial chips.  
+Again, this is for the Deauther and not for this project, but the hardware (ESP8266) is the same and you will find a lot of trouble-shooting info on the Wiki there! :)  
+
+Additionally, here's a video tutorial :)  
+[![$5 WiFi Spammer](https://img.youtube.com/vi/Zq7QNpPxCqE/0.jpg)](https://www.youtube.com/watch?v=Zq7QNpPxCqE)
 
 ## License
 
@@ -64,4 +69,4 @@ This project is licensed under the MIT License - see the [license file](LICENSE)
 ## Sources
  
 The 50 default SSIDs are from: http://www.makeuseof.com/tag/50-funny-wi-fi-names-network-ssid/  
-More infos about beacon frames: https://mrncciew.com/2014/10/08/802-11-mgmt-beacon-frame/  
+More info about beacon frames: https://mrncciew.com/2014/10/08/802-11-mgmt-beacon-frame/  
