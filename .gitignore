@@ -31,3 +31,9 @@
 # Debug files
 *.dSYM/
 *.su
+/esp8266_beaconSpam/Debug
+/esp8266_beaconSpam/Release
+/esp8266_beaconSpam/.vs/esp8266_beaconSpam/v16/.suo
+/esp8266_beaconSpam/.vs/esp8266_beaconSpam/v16/ipch/AutoPCH
+/esp8266_beaconSpam/myConfig.h
+/esp8266_beaconSpam/.vs/esp8266_beaconSpam/v16
