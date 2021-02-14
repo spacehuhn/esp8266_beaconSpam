@@ -1,0 +1,14 @@
+#####################################################
+ Arduino How To: Use sub folders for source code
+	http://www.visualmicro.com/
+#####################################################
+
+* .INO code can exist in the project folder and '\src' folder.
+* .Cpp/.c/.S/.h etc. can exist in the project folder, the '\src' folder and in any folder(s) below the '\src' folder.
+* .Cpp/.c/.S/.h sources in shared code projects should follow the same folder rules (because they are merged with the project sources into a temporary build folder prior to compile).
+
+* Use the 'Show All Files' icon above the 'Solution Explorer' to switch between 'included project files' and 'physical files/folders'.
+* Source code in the project folder will always be compiled regardless of inclusion in the project. This functionality can be disabled in Global Options.
+
+
+
