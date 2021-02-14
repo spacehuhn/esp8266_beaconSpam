@@ -18,7 +18,13 @@ ESP32 version by [@Tnze](https://github.com/Tnze): [esp32_beaconSpam](https://gi
 ## Changes
 
 I wrote the initial sketch in 2017 and it had some flaws.  
-Here are the latest changes (06/2018):  
+
+[@gojimmypi](https://github.com/gojimmypi) changes (2/2012)
+ - known MAC address prefixes (see ./esp8266_beaconSpam/oui.txt)
+ - reset wifi channel index at each loop to avoid channel hopping for a given SSID
+ - minor code cleanup / comments / formatting
+
+Changes from (06/2018):  
 - Now works with ESP8266 Arduino Core v2.0.0 or newer without **any** further modification
 - Fixed the bug that the SSIDs are not shown correctly on IOS
 - No need for a SD card anymore to save hundrets of SSIDs, they are all stored in the PROGMEM now
@@ -61,6 +67,12 @@ Again, this is for the Deauther and not for this project, but the hardware (ESP8
 
 Additionally, here's a video tutorial :)  
 [![$5 WiFi Spammer](https://img.youtube.com/vi/Zq7QNpPxCqE/0.jpg)](https://www.youtube.com/watch?v=Zq7QNpPxCqE)
+
+## Troubleshooting
+
+If the device is not recognized, try a different USB cable. If using a USB hub - try connecting directly to computer.
+
+If you successfully flash the board and no fun WiFi SSID values are observed, try power cycling the device.
 
 ## License
 
