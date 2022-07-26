@@ -18,7 +18,9 @@
 // *** max 32 characters per SSID. ok, technically it's 32 "octets", eg 32 ASCII characters or 32 bytes
 // *** remember to use quotes and commas
 const char ssidList[][33] PROGMEM = {
-//  "12345678901234567890123456789012" // as a point of reference, this is 32 ASCII characters
+
+  //  "12345678901234567890123456789012" // as a point of reference, this is 32 ASCII characters
+  
     "The Password is...",
     "Untrusted Network",
     "404 Network Unavailable",
