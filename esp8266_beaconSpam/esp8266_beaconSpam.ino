@@ -19,7 +19,7 @@
 // *** remember to use quotes and commas
 const char ssidList[][33] PROGMEM = {
 
-  //  "12345678901234567890123456789012" // as a point of reference, this is 32 ASCII characters
+//  "12345678901234567890123456789012" // as a point of reference, this is 32 ASCII characters
   
     "The Password is...",
     "Untrusted Network",
