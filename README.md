@@ -1,29 +1,22 @@
+I've been playing with this, and making some big improvements to it. One of the bugs in the old version was that 50% of the time, it worked every time. Now it's working 100% of the time.
+
+Also new features, to be documented soon.
+
+
+By the pevious author:
+
 # ESP8266 Beacon Spam
 
 
 <p align="center"><img alt="project-logo" width="300" src="https://raw.githubusercontent.com/spacehuhn/esp8266_beaconSpam/master/img/beacon_spam.png"></p>
  
 <p align="center">
-🐦 <a href="https://twitter.com/spacehuhn">Twitter</a>
-| 📺 <a href="https://www.youtube.com/channel/UCFmjA6dnjv-phqrFACyI8tw">YouTube</a>
-| 🌍 <a href="https://spacehuhn.de">spacehuhn.de</a><br/>
+
 <br>
-p<b>Advertise hundreds of WiFi access points with custom SSIDs.<br>
+p<b>Advertise thousdands of WiFi access points with custom SSIDs.<br>
 <br>
-Support the development of this project by purchasing one of the <a href="https://github.com/spacehuhn/esp8266_deauther/wiki/Supported-Devices">official deauther boards</a>.<br/>Or become a patron on <a href="https://patreon.com/spacehuhn" target="_blank">patreon.com/spacehuhn</a>.</b>
-</p>
 
-ESP32 version by [@Tnze](https://github.com/Tnze): [esp32_beaconSpam](https://github.com/Tnze/esp32_beaconSpam).  
-
-## Changes
-
-I wrote the initial sketch in 2017 and it had some flaws.  
-Here are the latest changes (06/2018):  
-- Now works with ESP8266 Arduino Core v2.0.0 or newer without **any** further modification
-- Fixed the bug that the SSIDs are not shown correctly on IOS
-- No need for a SD card anymore to save hundrets of SSIDs, they are all stored in the PROGMEM now
-
-Using the SD card might be useful for some people... but thanks to the magic of git, you can still view the old repository [here](https://github.com/spacehuhn/esp8266_beaconSpam/tree/v1.0). 
+ESP32 version by [@Tnze](https://github.com/Tnze): [esp32_beaconSpam](https://github.com/Tnze/esp32_beaconSpam).
 
 I didn't publish a .bin file on purpose. This project is easy to create with Arduino and everyone should be able to get it working!  
 The goal of this is to motivate people to get into hacking, electronics and Arduino, so don't be lazy and start making your own stuff! :D
