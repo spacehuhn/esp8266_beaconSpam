@@ -1,7 +1,92 @@
-I've been playing with this, and making some big improvements to it. One of the bugs in the old version was that 50% of the time, it worked every time. Now it's working 100% of the time.
+I've been playing with this, and making some big improvements to it. One of the bugs in the old version was that 50% of the time, it worked every time. **Now it's working 100% of every time.**
 
-Also new features, to be documented soon.
+The big new feature is a new mode for assigning MAC addresses to SSIDs. The old mode is "0" ("macMode = 0"), and it works as expected, and can be seen in this start-up message:
+```
+//// Atom Smasher's Beacon Spammer v1.0 ////
 
+// MACs:                 SSIDs:
+     be:5d:3b:00:53:01     The Password is...
+     be:5d:3b:00:53:02     Untrusted Network
+     be:5d:3b:00:53:03     404 Network Unavailable
+     be:5d:3b:00:53:04     The Internet
+     be:5d:3b:00:53:05     Click Here for Wifi
+     be:5d:3b:00:53:06     No Internet Access
+     be:5d:3b:00:53:07     FBI Channel 90210
+     be:5d:3b:00:53:08     Click Here to Download
+     be:5d:3b:00:53:09     The Promised LAN
+     be:5d:3b:00:53:0a     Free Public Wifi
+     be:5d:3b:00:53:0b     $1 per hour
+     be:5d:3b:00:53:0c     Russian Hackers
+     be:5d:3b:00:53:0d     The LAN of the Free
+     be:5d:3b:00:53:0e     No Connections Available
+     be:5d:3b:00:53:0f     No More Mister Wifi
+     be:5d:3b:00:53:10     Router? I Hardly Knew Her
+     be:5d:3b:00:53:11     Connected, Secured
+     be:5d:3b:00:53:12     The LAN Before Time
+     be:5d:3b:00:53:13     Get off my LAN
+     be:5d:3b:00:53:14     Silence of the LAN
+
+// randomMacSeed:        SSIDs:                Started in:
+     0x1234abcd            20                    615ms
+
+Packets/s: 199.501
+Packets/s: 200.000
+Packets/s: 199.960
+Packets/s: 199.960
+Packets/s: 199.960
+[...]
+```
+
+As expected, a random MAC is set, and (up to 255) SSIDs can sequentially increment the MAC address. The new mode "1" ("macMode = 1") sets the MAC addresses "randomly", as can be seen in this start-up message:
+```
+//// Atom Smasher's Beacon Spammer v1.0 ////
+
+// MACs:                 SSIDs:
+     be:5d:3b:00:53:9e     The Password is...
+     ea:ff:b2:e4:2d:4e     Untrusted Network
+     16:a1:29:c8:07:fe     404 Network Unavailable
+     46:43:a0:ab:e2:ae     The Internet
+     72:e5:17:8f:bc:5e     Click Here for Wifi
+     9e:87:8e:72:97:0e     No Internet Access
+     ce:29:05:56:71:be     FBI Channel 90210
+     fa:cb:7c:39:4b:6e     Click Here to Download
+     26:6d:f3:1d:26:1e     The Promised LAN
+     56:0f:6a:01:00:ce     Free Public Wifi
+     82:b1:e1:e4:da:7e     $1 per hour
+     ae:53:57:c8:b5:2e     Russian Hackers
+     de:f5:ce:ab:8f:df     The LAN of the Free
+     0a:97:45:8f:69:8f     No Connections Available
+     36:39:bc:72:44:3f     No More Mister Wifi
+     66:db:33:56:1e:ef     Router? I Hardly Knew Her
+     92:7d:aa:3a:f8:9f     Connected, Secured
+     be:1f:21:1d:d3:4f     The LAN Before Time
+     ee:c1:98:01:ad:ff     Get off my LAN
+     1a:63:0f:e4:87:af     Silence of the LAN
+
+// randomMacSeed:        SSIDs:                Started in:
+     0x1234abcd            20                    615ms
+
+Packets/s: 199.501
+Packets/s: 199.900
+Packets/s: 199.980
+Packets/s: 199.920
+Packets/s: 199.940
+[...]
+```
+
+Note that the "randomMacSeed" is the same in both of those, and the first MAC address in the second start-up message resembles all of the MAC addresses in the first start-up message.
+
+The "randomMacSeed" can be set randomly, giving different MAC addresses (per list of SSIDs names) every time it's re-started, or it can be set manually for consistency, or to "synchronise" two or more devices to have the same MAC addresses.
+
+The code is also written to make it easy to manually set any parts of the MAC address, eg "set" the first three octets, or set the last four octets to "deadbeef", or whatever. The range of each octet's random assignment can also be set, and bitmasking can be used to exclude or set certain digits to certain values.
+
+The start-up messages sent to the serial port seem useful, at least to me.
+
+The biggest bug-fix was dealing with the "I/G bit"; now it works 100% of the time, every time.
+
+The throttle function prevents it from sending more than 10 beacons per second, per SSID, per channel. As can be seen in the start-up messages, 20 SSIDs, on one channel, and it's being throttled to 200 packets/second. In my testing, it tops out at about 930 packets/second, so just by 100 SSDIS per channel, it will start to go slower than 10 beacons per second.
+
+Some bug-fixes, some new features, some code clean-up. I'm keeping with the spirit of the original author, and not releasing any binaries. The project BEGS to be customised. Using the default SSID names is fine for testing, but lame for anything else. This was my first Arduino project and my first non-trivial programming in C, or whatever variant of C this is. Hopefully other will continue to build on it, and to learn from it.
 
 By the pevious author:
 
