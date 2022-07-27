@@ -2,74 +2,76 @@ I've been playing with this, and making some big improvements to it. One of the 
 
 The big new feature is a new mode for assigning MAC addresses to SSIDs. The old mode is "0" ("macMode = 0"), and it works as expected, and can be seen in this start-up message:
 ```
-//// Atom Smasher's Beacon Spammer v1.0 ////
+//// Atom Smasher's Beacon Spammer v1.1 ////
 
 // MACs:                 SSIDs:
-     be:5d:3b:00:53:01     The Password is...
-     be:5d:3b:00:53:02     Untrusted Network
-     be:5d:3b:00:53:03     404 Network Unavailable
-     be:5d:3b:00:53:04     The Internet
-     be:5d:3b:00:53:05     Click Here for Wifi
-     be:5d:3b:00:53:06     No Internet Access
-     be:5d:3b:00:53:07     FBI Channel 90210
-     be:5d:3b:00:53:08     Click Here to Download
-     be:5d:3b:00:53:09     The Promised LAN
-     be:5d:3b:00:53:0a     Free Public Wifi
-     be:5d:3b:00:53:0b     $1 per hour
-     be:5d:3b:00:53:0c     Russian Hackers
-     be:5d:3b:00:53:0d     The LAN of the Free
-     be:5d:3b:00:53:0e     No Connections Available
-     be:5d:3b:00:53:0f     No More Mister Wifi
-     be:5d:3b:00:53:10     Router? I Hardly Knew Her
-     be:5d:3b:00:53:11     Connected, Secured
-     be:5d:3b:00:53:12     The LAN Before Time
-     be:5d:3b:00:53:13     Get off my LAN
-     be:5d:3b:00:53:14     Silence of the LAN
+
+     7e:1c:b7:8d:80:00     The Password is...
+     7e:1c:b7:8d:80:01     Untrusted Network
+     7e:1c:b7:8d:80:02     404 Network Unavailable
+     7e:1c:b7:8d:80:03     The Internet
+     7e:1c:b7:8d:80:04     Click Here for Wifi
+     7e:1c:b7:8d:80:05     No Internet Access
+     7e:1c:b7:8d:80:06     FBI Channel 90210
+     7e:1c:b7:8d:80:07     Click Here to Download
+     7e:1c:b7:8d:80:08     The Promised LAN
+     7e:1c:b7:8d:80:09     Free Public Wifi
+     7e:1c:b7:8d:80:0a     $1 per hour
+     7e:1c:b7:8d:80:0b     Russian Hackers
+     7e:1c:b7:8d:80:0c     The LAN of the Free
+     7e:1c:b7:8d:80:0d     No Connections Available
+     7e:1c:b7:8d:80:0e     No More Mister Wifi
+     7e:1c:b7:8d:80:0f     Router? I Hardly Knew Her
+     7e:1c:b7:8d:80:10     Connected, Secured
+     7e:1c:b7:8d:80:11     The LAN Before Time
+     7e:1c:b7:8d:80:12     Get off my LAN
+     7e:1c:b7:8d:80:13     Silence of the LAN
 
 // randomMacSeed:        SSIDs:                Started in:
-     0x1234abcd            20                    615ms
+     0x12345abc            20                    615ms
 
-Packets/s: 199.501
+Packets/s: 199.561
 Packets/s: 200.000
-Packets/s: 199.960
-Packets/s: 199.960
-Packets/s: 199.960
+Packets/s: 199.940
+Packets/s: 199.920
+Packets/s: 200.000
 [...]
 ```
 
-As expected, a random MAC is set, and (up to 255) SSIDs can sequentially increment the MAC address. The new mode "1" ("macMode = 1") sets the MAC addresses "randomly", as can be seen in this start-up message:
+As expected, a random MAC is set, and SSIDs will sequentially increment the MAC address. As of v1.1, this works with a little over 23,000 SSID names, rolling over the 3rd and 4th octets of the MAC address as needed; more SSID names made compilation fail. The new mode "1" ("macMode = 1") sets the MAC addresses "randomly", as can be seen in this start-up message:
 ```
-//// Atom Smasher's Beacon Spammer v1.0 ////
+//// Atom Smasher's Beacon Spammer v1.1 ////
 
 // MACs:                 SSIDs:
-     be:5d:3b:00:53:9e     The Password is...
-     ea:ff:b2:e4:2d:4e     Untrusted Network
-     16:a1:29:c8:07:fe     404 Network Unavailable
-     46:43:a0:ab:e2:ae     The Internet
-     72:e5:17:8f:bc:5e     Click Here for Wifi
-     9e:87:8e:72:97:0e     No Internet Access
-     ce:29:05:56:71:be     FBI Channel 90210
-     fa:cb:7c:39:4b:6e     Click Here to Download
-     26:6d:f3:1d:26:1e     The Promised LAN
-     56:0f:6a:01:00:ce     Free Public Wifi
-     82:b1:e1:e4:da:7e     $1 per hour
-     ae:53:57:c8:b5:2e     Russian Hackers
-     de:f5:ce:ab:8f:df     The LAN of the Free
-     0a:97:45:8f:69:8f     No Connections Available
-     36:39:bc:72:44:3f     No More Mister Wifi
-     66:db:33:56:1e:ef     Router? I Hardly Knew Her
-     92:7d:aa:3a:f8:9f     Connected, Secured
-     be:1f:21:1d:d3:4f     The LAN Before Time
-     ee:c1:98:01:ad:ff     Get off my LAN
-     1a:63:0f:e4:87:af     Silence of the LAN
+
+     7e:1c:b7:8d:80:6d     The Password is...
+     a2:b9:c6:2e:0d:6a     Untrusted Network
+     02:7e:32:0a:96:c0     404 Network Unavailable
+     da:6f:e4:dc:c2:7e     The Internet
+     9e:8f:7f:08:33:d8     Click Here for Wifi
+     4a:9b:4d:6b:19:74     No Internet Access
+     32:d8:17:5f:aa:24     FBI Channel 90210
+     ce:94:0a:e0:b0:aa     Click Here to Download
+     72:f9:39:ab:21:55     The Promised LAN
+     de:e0:a2:b0:be:af     Free Public Wifi
+     6a:81:1b:a4:e9:3b     $1 per hour
+     e6:87:c9:21:fc:6e     Russian Hackers
+     ea:8e:43:37:7e:03     The LAN of the Free
+     56:71:fb:17:a5:e8     No Connections Available
+     12:75:37:05:0d:e6     No More Mister Wifi
+     3e:51:41:12:16:88     Router? I Hardly Knew Her
+     c2:8f:4e:e0:fc:2e     Connected, Secured
+     8a:70:da:47:55:b8     The LAN Before Time
+     4e:eb:ab:09:ae:b9     Get off my LAN
+     ea:51:cc:b8:d0:05     Silence of the LAN
 
 // randomMacSeed:        SSIDs:                Started in:
-     0x1234abcd            20                    615ms
+     0x12345abc            20                    619ms
 
-Packets/s: 199.501
-Packets/s: 199.900
-Packets/s: 199.980
+Packets/s: 199.541
+Packets/s: 200.000
 Packets/s: 199.920
+Packets/s: 200.000
 Packets/s: 199.940
 [...]
 ```
@@ -84,9 +86,9 @@ The start-up messages sent to the serial port seem useful, at least to me.
 
 The biggest bug-fix was dealing with the "I/G bit"; now it works 100% of the time, every time.
 
-The throttle function prevents it from sending more than 10 beacons per second, per SSID, per channel. As can be seen in the start-up messages, 20 SSIDs, on one channel, and it's being throttled to 200 packets/second. In my testing, it tops out at about 930 packets/second, so just by 100 SSDIS per channel, it will start to go slower than 10 beacons per second.
+The throttle function prevents it from sending more than 10 beacons per second, per SSID, per channel. As can be seen in the start-up messages, 20 SSIDs, on one channel, and it's being throttled to 200 packets/second. In my testing, it tops out at about 930 packets/second, so at about 100 SSIDs per channel, it will start to go slower than 10 beacons per second; this may vary with different hardware.
 
-Some bug-fixes, some new features, some code clean-up. I'm keeping with the spirit of the original author, and not releasing any binaries. The project BEGS to be customised. Using the default SSID names is fine for testing, but lame for anything else. This was my first Arduino project and my first non-trivial programming in C, or whatever variant of C this is. Hopefully other will continue to build on it, and to learn from it.
+Some bug-fixes, some new features, some code clean-up. I'm keeping with the spirit of the original author, and not releasing any binaries. The project BEGS to be customised. Using the default SSID names is fine for testing, but lame for anything else. This was my first Arduino project and my first non-trivial programming in C, or whatever variant of C this is. Hopefully others will continue to build on it, and to learn from it.
 
 By the pevious author:
 
