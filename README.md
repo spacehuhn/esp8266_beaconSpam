@@ -1,4 +1,4 @@
-I've been playing with this, and making some big improvements to it. One of the bugs in the old version was that 50% of the time, it worked every time. **Now it's working 100% of every time.**
+I've been playing with this, and making some big improvements to it. One of the bugs in the older version was that 50% of the time, it worked every time. **Now it's working 100% of every time.**
 
 The big new feature is a new mode for assigning MAC addresses to SSIDs. The old mode is "0" ("macMode = 0"), and it works as expected, and can be seen in this start-up message:
 ```
