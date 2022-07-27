@@ -20,7 +20,7 @@
 const char ssidList[][33] PROGMEM = {
 
 //  "12345678901234567890123456789012" // as a point of reference, this is 32 ASCII characters
-  
+
     "The Password is...",
     "Untrusted Network",
     "404 Network Unavailable",
@@ -41,6 +41,7 @@ const char ssidList[][33] PROGMEM = {
     "The LAN Before Time",
     "Get off my LAN",
     "Silence of the LAN"
+
 };
 
 //////// channels ////////
@@ -67,7 +68,7 @@ const bool wpa2 = false;
 // can be used to "synchronise" two or more devices
 // seed is printed to serial port at start-up
 const uint64_t randomMacSeed = os_random();     // random seed on startup
-//const uint64_t randomMacSeed = 0x1234abcd ;   // fixed seed; make it your own
+//const uint64_t randomMacSeed = 0x12345abc ;   // fixed seed; make it your own
 
 //////// Includes ////////
 #include <ESP8266WiFi.h>
@@ -84,6 +85,7 @@ const uint64_t randomMacSeed = os_random();     // random seed on startup
 // run-time variables
 uint16_t channelIndex = 0;
 uint8_t  macAddr[5];
+uint8_t  macAddr_b[5];
 uint8_t  wifi_channel = channels[0];
 uint32_t packetSize = 0;
 uint32_t loopStartTime = 0;
@@ -187,13 +189,12 @@ void randomMac() {
   macAddr[2] = uint8_t(random(0x0, 0x100));
   macAddr[3] = uint8_t(random(0x0, 0x100));
   macAddr[4] = uint8_t(random(0x0, 0x100));
-//macAddr[5] = uint8_t(0x00); // this one gets assigned sequentially,
+  macAddr[5] = uint8_t(0x00); // this one gets assigned sequentially,
                               // later on, when this mode is in use
 }
 
 void mayhemMac(uint32_t ssidNum) {
   // SEE COMMENTS, ABOVE
-  randomSeed(uint32_t((randomMacSeed) + (ssidNum)));
   macAddr[0] = uint8_t(random(0x0, 0x100)) & 0xfe | 0x02 ; // SEE COMMENTS, ABOVE
   macAddr[1] = uint8_t(random(0x0, 0x100));
   macAddr[2] = uint8_t(random(0x0, 0x100));
@@ -241,7 +242,7 @@ void setup() {
 
   ///////////////////////////////
   // mac and ssid startup message
-  Serial.println("\n//// Atom Smasher's Beacon Spammer v1.0 ////\n\n// MACs:                 SSIDs:");
+  Serial.println("\n//// Atom Smasher's Beacon Spammer v1.1 ////\n\n// MACs:                 SSIDs:");
   ssidCount = sizeof(ssidList) / sizeof(ssidList[0]);
   i = 0;
   if (0 == macMode) {
@@ -250,12 +251,18 @@ void setup() {
     for (i = 0; i < ssidCount; i++) {
       yield(); // needed for extra-large lists
       Serial.printf("     %02x:%02x:%02x:%02x:%02x:%02x     %s\n",
-        macAddr[0], macAddr[1], macAddr[2], macAddr[3], macAddr[4], macAddr[5] + i + 1,
+        macAddr[0],
+        macAddr[1],
+        macAddr[2],
+        uint8_t(macAddr[3] + ((macAddr[4] + (i / 0x100)) / 0x100)), // rollover mac address for large ssid lists
+        uint8_t(macAddr[4] + (i / 0x100)),                          // rollover mac address for large ssid lists
+        uint8_t(i), // "i" bound by uint8 is effectively "i % 0x100", and it becomes "macAddr[5]"
         ssidList[i]);
       // end start macMode=0
    }
   } else {
     // start macMode=1
+    randomSeed(uint32_t(randomMacSeed));
     for (i = 0; i < ssidCount; i++) {
       yield(); // needed for extra-large lists
       mayhemMac(i);
@@ -276,6 +283,10 @@ void setup() {
   // during the first iteration of the packet counter loop
   loopStartTime = packetRateTime = millis();
 
+
+  macAddr_b[3] = macAddr[3]; // rollover safety
+  macAddr_b[4] = macAddr[4]; // rollover safety
+
 }
 
 void loop() {
@@ -287,6 +298,10 @@ void loop() {
 
   uint32_t ssidNum = 0;
 
+  if (1 == macMode) {
+    randomSeed(uint32_t(randomMacSeed));
+  }
+
   // for each ssid ...
   for (i = 0; i < ssidCount; i++) {
 
@@ -294,9 +309,11 @@ void loop() {
       // if mayhemMac
       if (1 == macMode) {
         mayhemMac(ssidNum);
-        //////
       } else {
-        macAddr[5] = ssidNum;
+        // classic mac mode     
+        macAddr[5] = uint8_t(ssidNum);
+        macAddr[4] = uint8_t(macAddr_b[4] + (ssidNum / 0x100));                            // gracefully handle >256 SSIDs
+        macAddr[3] = uint8_t(macAddr_b[3] + ((macAddr_b[4] + (ssidNum / 0x100)) / 0x100)); // gracefully handle >256 SSIDs
       }
 
       ssidNum++;
