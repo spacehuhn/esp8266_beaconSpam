@@ -76,7 +76,7 @@ Packets/s: 199.940
 [...]
 ```
 
-Note that the "randomMacSeed" is the same in both of those, and the first MAC address in the second start-up message resembles all of the MAC addresses in the first start-up message.
+Note that the "randomMacSeed" is the same in both of those, which is why the first MAC address in the second start-up message resembles all of the MAC addresses in the first start-up message.
 
 The "randomMacSeed" can be set randomly, giving different MAC addresses (per list of SSIDs names) every time it's re-started, or it can be set manually for consistency, or to "synchronise" two or more devices to have the same MAC addresses.
 
