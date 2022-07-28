@@ -38,7 +38,7 @@ Packets/s: 200.000
 [...]
 ```
 
-As expected, a random MAC is set, and SSIDs will sequentially increment the MAC address. As of v1.1, this works with a little over 23,000 SSID names, rolling over the 3rd and 4th octets of the MAC address as needed; more SSID names made compilation fail. The new mode "1" ("macMode = 1") sets the MAC addresses "randomly", as can be seen in this start-up message:
+As expected, a random MAC is set, and SSIDs will sequentially increment the MAC address. As of v1.1, this works with a little over 23,000 SSID names, rolling over the 4th and 5th octets of the MAC address as needed; more SSID names made compilation fail. The new mode "1" ("macMode = 1") sets the MAC addresses "randomly", as can be seen in this start-up message:
 ```
 //// Atom Smasher's Beacon Spammer v1.1 ////
 
