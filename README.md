@@ -2,77 +2,65 @@ I've been playing with this, and making some big improvements to it. One of the 
 
 The big new feature is a new mode for assigning MAC addresses to SSIDs. The old mode is "0" ("macMode = 0"), and it works as expected, and can be seen in this start-up message:
 ```
-//// Atom Smasher's Beacon Spammer v1.1 ////
+//// Atom Smasher's Beacon Spammer v1.3 ////
 
 // MACs:                 SSIDs:
-
-     7e:1c:b7:8d:80:00     The Password is...
-     7e:1c:b7:8d:80:01     Untrusted Network
-     7e:1c:b7:8d:80:02     404 Network Unavailable
-     7e:1c:b7:8d:80:03     The Internet
-     7e:1c:b7:8d:80:04     Click Here for Wifi
-     7e:1c:b7:8d:80:05     No Internet Access
-     7e:1c:b7:8d:80:06     FBI Channel 90210
-     7e:1c:b7:8d:80:07     Click Here to Download
-     7e:1c:b7:8d:80:08     The Promised LAN
-     7e:1c:b7:8d:80:09     Free Public Wifi
-     7e:1c:b7:8d:80:0a     $1 per hour
-     7e:1c:b7:8d:80:0b     Russian Hackers
-     7e:1c:b7:8d:80:0c     The LAN of the Free
-     7e:1c:b7:8d:80:0d     No Connections Available
-     7e:1c:b7:8d:80:0e     No More Mister Wifi
-     7e:1c:b7:8d:80:0f     Router? I Hardly Knew Her
-     7e:1c:b7:8d:80:10     Connected, Secured
-     7e:1c:b7:8d:80:11     The LAN Before Time
-     7e:1c:b7:8d:80:12     Get off my LAN
-     7e:1c:b7:8d:80:13     Silence of the LAN
+     7e:1c:b7:8d:80:00     one
+     7e:1c:b7:8d:80:01     two
+     7e:1c:b7:8d:80:02     three
+     7e:1c:b7:8d:80:03     four
+     7e:1c:b7:8d:80:04     five
+     7e:1c:b7:8d:80:05     six
+     7e:1c:b7:8d:80:06     seven
+     7e:1c:b7:8d:80:07     eight
+     7e:1c:b7:8d:80:08     nine
+     7e:1c:b7:8d:80:09     ten
+     7e:1c:b7:8d:80:0a     eleven
+     7e:1c:b7:8d:80:0b     twelve
+     7e:1c:b7:8d:80:0c     thirteen
+     7e:1c:b7:8d:80:0d     fourteen
+     7e:1c:b7:8d:80:0e     fifteen
 
 // randomMacSeed:        SSIDs:                Started in:
-     0x12345abc            20                    615ms
+     0x12345abc            15                    0.569s
 
-Packets/s: 199.561
-Packets/s: 200.000
-Packets/s: 199.940
-Packets/s: 199.920
-Packets/s: 200.000
+[60.009] 148.98 packets/s,  99.3%
+[120.000] 150.00 packets/s, 100.0%
+[180.000] 150.00 packets/s, 100.0%
+[240.000] 150.00 packets/s, 100.0%
+[300.000] 150.00 packets/s, 100.0%
 [...]
 ```
 
 As expected, a random MAC is set, and SSIDs will sequentially increment the MAC address. As of v1.1, this works with a little over 23,000 SSID names, rolling over the 4th and 5th octets of the MAC address as needed; more SSID names made compilation fail. The new mode "1" ("macMode = 1") sets the MAC addresses "randomly", as can be seen in this start-up message:
 ```
-//// Atom Smasher's Beacon Spammer v1.1 ////
+//// Atom Smasher's Beacon Spammer v1.3 ////
 
 // MACs:                 SSIDs:
-
-     7e:1c:b7:8d:80:6d     The Password is...
-     a2:b9:c6:2e:0d:6a     Untrusted Network
-     02:7e:32:0a:96:c0     404 Network Unavailable
-     da:6f:e4:dc:c2:7e     The Internet
-     9e:8f:7f:08:33:d8     Click Here for Wifi
-     4a:9b:4d:6b:19:74     No Internet Access
-     32:d8:17:5f:aa:24     FBI Channel 90210
-     ce:94:0a:e0:b0:aa     Click Here to Download
-     72:f9:39:ab:21:55     The Promised LAN
-     de:e0:a2:b0:be:af     Free Public Wifi
-     6a:81:1b:a4:e9:3b     $1 per hour
-     e6:87:c9:21:fc:6e     Russian Hackers
-     ea:8e:43:37:7e:03     The LAN of the Free
-     56:71:fb:17:a5:e8     No Connections Available
-     12:75:37:05:0d:e6     No More Mister Wifi
-     3e:51:41:12:16:88     Router? I Hardly Knew Her
-     c2:8f:4e:e0:fc:2e     Connected, Secured
-     8a:70:da:47:55:b8     The LAN Before Time
-     4e:eb:ab:09:ae:b9     Get off my LAN
-     ea:51:cc:b8:d0:05     Silence of the LAN
+     7e:1c:b7:8d:80:6d     one
+     a2:b9:c6:2e:0d:6a     two
+     02:7e:32:0a:96:c0     three
+     da:6f:e4:dc:c2:7e     four
+     9e:8f:7f:08:33:d8     five
+     4a:9b:4d:6b:19:74     six
+     32:d8:17:5f:aa:24     seven
+     ce:94:0a:e0:b0:aa     eight
+     72:f9:39:ab:21:55     nine
+     de:e0:a2:b0:be:af     ten
+     6a:81:1b:a4:e9:3b     eleven
+     e6:87:c9:21:fc:6e     twelve
+     ea:8e:43:37:7e:03     thirteen
+     56:71:fb:17:a5:e8     fourteen
+     12:75:37:05:0d:e6     fifteen
 
 // randomMacSeed:        SSIDs:                Started in:
-     0x12345abc            20                    619ms
+     0x12345abc            15                    0.562s
 
-Packets/s: 199.541
-Packets/s: 200.000
-Packets/s: 199.920
-Packets/s: 200.000
-Packets/s: 199.940
+[60.000] 149.00 packets/s,  99.3%
+[120.000] 150.00 packets/s, 100.0%
+[180.000] 150.00 packets/s, 100.0%
+[240.000] 150.00 packets/s, 100.0%
+[300.000] 150.00 packets/s, 100.0%
 [...]
 ```
 
@@ -89,6 +77,8 @@ The biggest bug-fix that was inherited from earlier versions was fixing the "I/G
 The throttle function prevents it from sending more than 10 beacons per second, per SSID, per channel. As can be seen in the start-up messages, 20 SSIDs, on one channel, and it's being throttled to 200 packets/second. In my testing, it tops out at about 930 packets/second, so at about 100 SSIDs per channel, it will start to go slower than 10 beacons per second; this may vary with different hardware. 
 
 Some bug-fixes, some new features, some code clean-up. I'm keeping with the spirit of the original author, and not releasing any binaries. The project BEGS to be customised. Using the default SSID names is fine for testing, but lame for anything else. This was my first Arduino project and my first non-trivial programming in C, or whatever variant of C this is. Hopefully others will continue to build on it, and to learn from it.
+
+New in v1.3 is improved checking of whether or not beacons are actually being sent; this is kind of important. Also a feature to periodically "rekey" the MAC addresses, and that can be done either deterministally or randomly. 
 
 By the pevious author:
 
