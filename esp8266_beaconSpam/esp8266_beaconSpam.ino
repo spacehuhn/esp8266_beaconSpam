@@ -14,7 +14,7 @@
 
 //////// Settings ////////
 
-//////// SSIDs (that's why you're here) /////////
+// *** SSIDs (that's why you're here)
 // *** max 32 characters per SSID. ok, technically it's 32 "octets", eg 32 ASCII characters or 32 bytes
 // *** remember to use quotes and commas
 const char ssidList[][33] PROGMEM = {
@@ -48,7 +48,7 @@ const uint8_t channels[] = {1}; // used Wi-Fi channels (available: 1-14)
 //////// macMode ////////
 // macMode:
 // macMode = 0 : "classic" mac assignment; a random mac address is generated,
-//   and subsequent mac addresses are sequentially incremented.
+//   and subsequent mac addresses are sequentially incremented
 // macMode = 1 : "mayhem" mac assignment; each SSID is assigned a random mac
 const uint8_t macMode = 0;
 
@@ -58,16 +58,19 @@ const bool wpa2 = 0;
 
 //////// random seed for mac addresses ////////
 // random seed for mac addresses. this can be set manually within the
-// bounds of uint32, to consistently reproduce "random" mac adresses
-// leaving this as random produces different mac addresses on every restart
+// bounds of uint32, to consistently reproduce "random" mac adresses.
+// leaving this as random produces different mac addresses on every restart.
 // setting to manual allows mac addresses to be maintained across restarts, and
-// can be used to "synchronise" two or more devices
-// seed is printed to serial port at start-up
+// can be used to "synchronise" two or more devices.
+// seed is printed to serial port at start-up.
+// humans are really bad at creating random numbers. a great way to manually make
+// a random seed is using the "randoms" script - https://github.com/atom-smasher/randoms
+// run that script like this: randoms -f 8 | awk '{print "0x"$0}'
 uint32_t randomMacSeed = os_random();     // random seed on startup
 //uint32_t randomMacSeed = 0x12345abc ;   // fixed seed; make it your own
 
 //////// report interval ////////
-// how many seconds should there be, between reports sent to serial port?
+// how many seconds should there be between reports sent to serial port?
 // 0 = no reports sent to serial port
 // keep it less than 2147483646
 // intiger, seconds
@@ -88,7 +91,7 @@ uint32_t rekeyTime = 0;
 
 // if the rekeyTime is < 0
 // this will either use the PRNG to deterministically re-key the mac addresses,
-// or use os_random() to "randomly" re-key the mac addresses
+// or use os_random() to randomly re-key the mac addresses
 // might be handy for keeping multiple devices in sync as mac addresses change
 const bool rekeyPRNG = false;
 
@@ -223,7 +226,7 @@ void randomMac() {
                               // later on, when this mode is in use
 }
 
-void mayhemMac(uint32_t ssidNum) {
+void mayhemMac() {
   // SEE COMMENTS, ABOVE
   macAddr[0] = uint8_t(random(0x0, 0x100)) & 0xfe | 0x02 ; // SEE COMMENTS, ABOVE
   macAddr[1] = uint8_t(random(0x0, 0x100));
@@ -259,7 +262,7 @@ void displayMacsSsids() {
     randomSeed(uint32_t(randomMacSeed));
     for (i = 0; i < ssidCount; i++) {
       yield(); // needed for extra-large lists
-      mayhemMac(i);
+      mayhemMac();
       Serial.printf("     %02x:%02x:%02x:%02x:%02x:%02x     %s\n",
         macAddr[0], macAddr[1], macAddr[2], macAddr[3], macAddr[4], macAddr[5],
         ssidList[i]);
@@ -308,7 +311,7 @@ void setup() {
 
   ///////////////////////////////
   // mac and ssid startup message
-  Serial.println("\n//// Atom Smasher's Beacon Spammer v1.3 ////\n");
+  Serial.println("\n//// Atom Smasher's Beacon Spammer v1.3a ////\n");
   displayMacsSsids();
 
 
@@ -345,7 +348,7 @@ void loop() {
         ///////////////
         // if mayhemMac
         if (1 == macMode) {
-          mayhemMac(ssidNum);
+          mayhemMac();
         } else {
           // classic mac mode
           macAddr[3] = uint8_t(macAddr_b[3] + ((macAddr_b[4] + (ssidNum / 0x100)) / 0x100)); // gracefully handle >256 SSIDs
@@ -365,11 +368,12 @@ void loop() {
         // set channel for beacon frame
         beaconPacket[82] = wifi_channel;
 
-        // this ensures that beacons are actually being sent
-        // and it's a lot slower than not ensuring that beacons are actually being sent
+        // this while-loop ensures that beacons are actually being sent
+        // and it's a lot slower than not ensuring that beacons are actually being sent.
         // to maintain 10 beacons per ssid per second per channel, the ssid list should be limited
-        // to about 70 ssids with wpa, or about 80 ssids with wpa; that's assuming only one channel is used
-        // larger lists of ssids will result in fewer than 10 beacons per ssid per second per channel
+        // to about 70 ssids with wpa, or about 80 ssids without wpa; that's assuming only one channel is used
+        // larger lists of ssids will result in fewer than 10 beacons per ssid per second per channel.
+        // this really is the speed-bump in the whole process.
         while (0 != wifi_send_pkt_freedom(beaconPacket, packetSize, 0)) {
           yield();
         }
@@ -440,7 +444,6 @@ void loop() {
           (millis() * 0.001),
           (float((packetCounter * 1000.0) / int32_t(packetRateTime_tmp - packetRateTime) )),
           (float((packetCounter * 10000.0) / int32_t(packetRateTime_tmp - packetRateTime) ) / ssidCount / (sizeof(channels))));
-        //        packetRateTime = millis();
         packetRateTime = packetRateTime_tmp;
         packetCounter = 0;
         reportTime += reportTime_fixed;
