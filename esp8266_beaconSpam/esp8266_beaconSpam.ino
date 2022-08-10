@@ -66,7 +66,10 @@ const bool wpa2 = 0;
 // humans are really bad at creating random numbers. a great way to manually make
 // a random seed is using the "randoms" script - https://github.com/atom-smasher/randoms
 // run that script like this: randoms -f 8 | awk '{print "0x"$0}'
-// or, on most modern linux systems, run this: crc32 /proc/sys/kernel/random/uuid | awk '{print "0x"$0}'
+// or, on most modern linux systems, run this:
+//   crc32 /proc/sys/kernel/random/uuid | awk '{print "0x"$0}'
+// or this:
+//   cut -c 1-8 < /proc/sys/kernel/random/uuid | awk '{print "0x"$0}'
 uint32_t randomMacSeed = os_random();     // random seed on startup
 //uint32_t randomMacSeed = 0x12345abc ;   // fixed seed; make it your own
 
@@ -312,7 +315,7 @@ void setup() {
 
   ///////////////////////////////
   // mac and ssid startup message
-  Serial.println("\n//// Atom Smasher's Beacon Spammer v1.3b ////\n");
+  Serial.println("\n//// Atom Smasher's Beacon Spammer v1.3c ////\n");
   displayMacsSsids();
 
 
