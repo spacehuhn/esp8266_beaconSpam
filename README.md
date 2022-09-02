@@ -74,7 +74,7 @@ The start-up messages sent to the serial port seem useful, at least to me.
 
 The biggest bug-fix over what was inherited from earlier versions was fixing the "I/G bit". Left to chance, 50% of the time it works every time. Now it works 100% of the time, every time. While I was fixing that, I coded to set the "U/L bit". The default setting leaves that set to "local" mode, but that's easy to change as desired, or leave it to random chance.
 
-The throttle function prevents it from sending more than 10 beacons per second, per SSID, per channel. As can be seen in the start-up messages, 20 SSIDs, on one channel, and it's being throttled to 200 packets/second. In my testing, it tops out at about 930 packets/second, so at about 100 SSIDs per channel, it will start to go slower than 10 beacons per second; this may vary with different hardware. 
+The throttle function prevents it from sending more than 10 beacons per second, per SSID, per channel. As can be seen in the start-up messages, 15 SSIDs, on one channel, and it's being throttled to 150 packets/second. In my testing, it tops out at about 930 packets/second, so at about 90-100 SSIDs per channel, it will start to go slower than 10 beacons per second; this may vary with different hardware. 
 
 Some bug-fixes, some new features, some code clean-up. I'm keeping with the spirit of the original author, and not releasing any binaries. The project BEGS to be customised. Using the default SSID names is fine for testing, but lame for anything else. This was my first Arduino project and my first non-trivial programming in C, or whatever variant of C this is. Hopefully others will continue to build on it, and to learn from it.
 
