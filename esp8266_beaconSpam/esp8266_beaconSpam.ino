@@ -1,6 +1,6 @@
 /*
   ===========================================
-  (c) 2022, Atom Smasher
+  (c) 2023, Atom Smasher
   https://github.com/atom-smasher/esp8266_beaconSpam
 
   based on the work of Stefan Kremser:
@@ -65,7 +65,7 @@ const bool wpa2 = 0;
 // seed is printed to serial port at start-up.
 // humans are really bad at creating random numbers. a great way to manually make
 // a random seed is using the "randoms" script - https://github.com/atom-smasher/randoms
-// run that script like this: randoms -f 8 | awk '{print "0x"$0}'
+// run that script like this: randoms -X 8
 // or, on most modern linux systems, run this:
 //   crc32 /proc/sys/kernel/random/uuid | awk '{print "0x"$0}'
 // or this:
@@ -315,7 +315,7 @@ void setup() {
 
   ///////////////////////////////
   // mac and ssid startup message
-  Serial.println("\n//// Atom Smasher's Beacon Spammer v1.3c ////\n");
+  Serial.println("\n//// Atom Smasher's Beacon Spammer v1.3d ////\n");
   displayMacsSsids();
 
 
