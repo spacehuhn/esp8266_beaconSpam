@@ -1,109 +1,157 @@
 /*
   ===========================================
-       Copyright (c) 2018 Stefan Kremser
-              github.com/spacehuhn
+  (c) 2023, Atom Smasher
+  https://github.com/atom-smasher/esp8266_beaconSpam
+
+  based on the work of Stefan Kremser:
+  https://github.com/spacehuhn/esp8266_beaconSpam
+
+  I fixed fix some significant bugs and added some features, but I'm grateful to Stefan
+  Kremser, as this was my first Arduino project, and my first real fight with C
+
   ===========================================
 */
 
-// ===== Settings ===== //
-const uint8_t channels[] = {1, 6, 11}; // used Wi-Fi channels (available: 1-14)
-const bool wpa2 = false; // WPA2 networks
-const bool appendSpaces = true; // makes all SSIDs 32 characters long to improve performance
+//////// Settings ////////
 
-/*
-  SSIDs:
-  - don't forget the \n at the end of each SSID!
-  - max. 32 characters per SSID
-  - don't add duplicates! You have to change one character at least
-*/
-const char ssids[] PROGMEM = {
-  "Mom Use This One\n"
-  "Abraham Linksys\n"
-  "Benjamin FrankLAN\n"
-  "Martin Router King\n"
-  "John Wilkes Bluetooth\n"
-  "Pretty Fly for a Wi-Fi\n"
-  "Bill Wi the Science Fi\n"
-  "I Believe Wi Can Fi\n"
-  "Tell My Wi-Fi Love Her\n"
-  "No More Mister Wi-Fi\n"
-  "LAN Solo\n"
-  "The LAN Before Time\n"
-  "Silence of the LANs\n"
-  "House LANister\n"
-  "Winternet Is Coming\n"
-  "Ping’s Landing\n"
-  "The Ping in the North\n"
-  "This LAN Is My LAN\n"
-  "Get Off My LAN\n"
-  "The Promised LAN\n"
-  "The LAN Down Under\n"
-  "FBI Surveillance Van 4\n"
-  "Area 51 Test Site\n"
-  "Drive-By Wi-Fi\n"
-  "Planet Express\n"
-  "Wu Tang LAN\n"
-  "Darude LANstorm\n"
-  "Never Gonna Give You Up\n"
-  "Hide Yo Kids, Hide Yo Wi-Fi\n"
-  "Loading…\n"
-  "Searching…\n"
-  "VIRUS.EXE\n"
-  "Virus-Infected Wi-Fi\n"
-  "Starbucks Wi-Fi\n"
-  "Text ###-#### for Password\n"
-  "Yell ____ for Password\n"
-  "The Password Is 1234\n"
-  "Free Public Wi-Fi\n"
-  "No Free Wi-Fi Here\n"
-  "Get Your Own Damn Wi-Fi\n"
-  "It Hurts When IP\n"
-  "Dora the Internet Explorer\n"
-  "404 Wi-Fi Unavailable\n"
-  "Porque-Fi\n"
-  "Titanic Syncing\n"
-  "Test Wi-Fi Please Ignore\n"
-  "Drop It Like It’s Hotspot\n"
-  "Life in the Fast LAN\n"
-  "The Creep Next Door\n"
-  "Ye Olde Internet\n"
+// *** SSIDs (that's why you're here)
+// *** max 32 characters per SSID. ok, technically it's 32 "octets", eg 32 ASCII characters or 32 bytes
+// *** remember to use quotes and commas
+const char ssidList[][33] PROGMEM = {
+
+//  "12345678901234567890123456789012" // as a point of reference, this is 32 ASCII characters
+
+    "one",
+    "two",
+    "three",
+    "four",
+    "five",
+    "six",
+    "seven",
+    "eight",
+    "nine",
+    "ten",
+    "eleven",
+    "twelve",
+    "thirteen",
+    "fourteen",
+    "fifteen"
+
 };
-// ==================== //
 
-// ===== Includes ===== //
+//////// channels ////////
+// most parts of the world only use channels 1-13
+// north america only uses channels 1-11
+// add multiple channels like this: "{1, 2, 5}"
+const uint8_t channels[] = {1}; // used Wi-Fi channels (available: 1-14)
+
+//////// macMode ////////
+// macMode:
+// macMode = 0 : "classic" mac assignment; a random mac address is generated,
+//   and subsequent mac addresses are sequentially incremented
+// macMode = 1 : "mayhem" mac assignment; each SSID is assigned a random mac
+const uint8_t macMode = 0;
+
+//////// WPA2 ////////
+// advertise OPEN or WPA2/AES
+const bool wpa2 = 0;
+
+//////// random seed for mac addresses ////////
+// random seed for mac addresses. this can be set manually within the
+// bounds of uint32, to consistently reproduce "random" mac adresses.
+// leaving this as random produces different mac addresses on every restart.
+// setting to manual allows mac addresses to be maintained across restarts, and
+// can be used to "synchronise" two or more devices.
+// seed is printed to serial port at start-up.
+// humans are really bad at creating random numbers. a great way to manually make
+// a random seed is using the "randoms" script - https://github.com/atom-smasher/randoms
+// run that script like this: randoms -X 8
+// or, on most modern linux systems, run this:
+//   crc32 /proc/sys/kernel/random/uuid | awk '{print "0x"$0}'
+// or this:
+//   cut -c 1-8 < /proc/sys/kernel/random/uuid | awk '{print "0x"$0}'
+uint32_t randomMacSeed = os_random();     // random seed on startup
+//uint32_t randomMacSeed = 0x12345abc ;   // fixed seed; make it your own
+
+//////// report interval ////////
+// how many seconds should there be between reports sent to serial port?
+// 0 = no reports sent to serial port
+// keep it less than 2147483646
+// intiger, seconds
+uint32_t reportTime = 60;
+
+//////// periodicaly re-key (randomise) the mac-addresses ////////
+// intiger, milliseconds
+// 0 = don't re-key
+// 60000 = re-key every minute
+// 300000 = re-key every 5 minutes
+// 600000 = re-key every 10 minutes
+// 1800000 = re-key every 30 minutes
+// 3600000 = re-key every hour
+// 86400000 = re-key every 24 hours
+// 604800000 = re-key every week
+// keep this number smaller than 2147483646
+uint32_t rekeyTime = 0;
+
+// if the rekeyTime is < 0
+// this will either use the PRNG to deterministically re-key the mac addresses,
+// or use os_random() to randomly re-key the mac addresses
+// might be handy for keeping multiple devices in sync as mac addresses change
+const bool rekeyPRNG = false;
+
+
+//////// ALL "NORMAL" CONFIG OPTIONS ARE ABOVE THIS LINE ////////
+//////// *********************************************** ////////
+
+//////// Includes ////////
 #include <ESP8266WiFi.h>
 
-extern "C" {
-#include "user_interface.h"
-  typedef void (*freedom_outside_cb_t)(uint8 status);
-  int wifi_register_send_pkt_freedom_cb(freedom_outside_cb_t cb);
-  void wifi_unregister_send_pkt_freedom_cb(void);
-  int wifi_send_pkt_freedom(uint8 *buf, int len, bool sys_seq);
-}
-// ==================== //
+//extern "C" {
+//#include "user_interface.h"
+//  typedef void (*freedom_outside_cb_t)(uint8 status);
+//  int wifi_register_send_pkt_freedom_cb(freedom_outside_cb_t cb);
+//  void wifi_unregister_send_pkt_freedom_cb(void);
+//  int wifi_send_pkt_freedom(uint8 *buf, int len, bool sys_seq);
+//}
 
+/////////////////////
 // run-time variables
-char emptySSID[32];
-uint8_t channelIndex = 0;
-uint8_t macAddr[6];
-uint8_t wifi_channel = 1;
-uint32_t currentTime = 0;
+uint16_t channelIndex = 0;
+uint8_t  macAddr[5];
+uint8_t  macAddr_b[5];
+uint8_t  wifi_channel;
 uint32_t packetSize = 0;
+uint32_t loopStartTime = 0;
 uint32_t packetCounter = 0;
-uint32_t attackTime = 0;
 uint32_t packetRateTime = 0;
+uint32_t packetRateTime_tmp = 0;
+uint16_t ssidCount = 0;
+uint32_t i = 0;
+uint32_t ssidNum = 0;
+uint32_t millisRollover = 0;
+uint32_t microsRollover = 0;
+uint32_t reportTime_fixed;
+uint32_t rekeyTime_fixed = rekeyTime;
+uint32_t sendPacketsLoopTime = 0;
 
+// this is the delay that prevents the send-packet loop from running unnecessarily fast
+// (1000 / sizeof(channels)) is a very sane number, here
+uint32_t throttle_loop = (100000 / sizeof(channels));
+
+//////////////////////////
 // beacon frame definition
 uint8_t beaconPacket[109] = {
   /*  0 - 3  */ 0x80, 0x00, 0x00, 0x00,             // Type/Subtype: managment beacon frame
   /*  4 - 9  */ 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // Destination: broadcast
-  /* 10 - 15 */ 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, // Source
-  /* 16 - 21 */ 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, // Source
+  /* 10 - 15 */ 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, // Source "mac"
+  /* 16 - 21 */ 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, // Source "mac"
 
   // Fixed parameters
   /* 22 - 23 */ 0x00, 0x00,                         // Fragment & sequence number (will be done by the SDK)
   /* 24 - 31 */ 0x83, 0x51, 0xf7, 0x8f, 0x0f, 0x00, 0x00, 0x00, // Timestamp
-  /* 32 - 33 */ 0xe8, 0x03,                         // Interval: 0x64, 0x00 => every 100ms - 0xe8, 0x03 => every 1s
+  /* 32 - 33 */ 0xe8, 0x03,                         // "Beacon Interval"
+                                                    // this does not affect the actual rate that beacons are sent
+                                                    // 0x64, 0x00 => about every 100ms - 0xe8, 0x03 => about every 1s
   /* 34 - 35 */ 0x31, 0x00,                         // capabilities Tnformation
 
   // Tagged parameters
@@ -139,7 +187,7 @@ uint8_t beaconPacket[109] = {
   /*  85 -  86 */ 0x01, 0x00,
   /*  87 -  90 */ 0x00, 0x0f, 0xac, 0x02,
   /*  91 -  92 */ 0x02, 0x00,
-  /*  93 - 100 */ 0x00, 0x0f, 0xac, 0x04, 0x00, 0x0f, 0xac, 0x04, /*Fix: changed 0x02(TKIP) to 0x04(CCMP) is default. WPA2 with TKIP not supported by many devices*/
+  /*  93 - 100 */ 0x00, 0x0f, 0xac, 0x04, 0x00, 0x0f, 0xac, 0x04,
   /* 101 - 102 */ 0x01, 0x00,
   /* 103 - 106 */ 0x00, 0x0f, 0xac, 0x02,
   /* 107 - 108 */ 0x00, 0x00
@@ -148,12 +196,13 @@ uint8_t beaconPacket[109] = {
 // Shift out channels one by one
 void nextChannel() {
   if (sizeof(channels) > 1) {
-    uint8_t ch = channels[channelIndex];
     channelIndex++;
-    if (channelIndex > sizeof(channels)) channelIndex = 0;
-
+    if (channelIndex >= sizeof(channels)) {
+      channelIndex = 0;
+    }
+    uint8_t ch = channels[channelIndex];
     if (ch != wifi_channel && ch >= 1 && ch <= 14) {
-      wifi_channel = ch;
+      wifi_channel = channels[channelIndex];
       wifi_set_channel(wifi_channel);
     }
   }
@@ -161,18 +210,84 @@ void nextChannel() {
 
 // Random MAC generator
 void randomMac() {
-  for (int i = 0; i < 6; i++){
-     macAddr[i] = random(256);
+  // sure, this could be done as a simple loop, but formatting it like
+  // this makes it easy to "manually" set all or part of the mac addresses,
+  // either fixed or within a given range of random values
+  //
+  // THE LOWEST TWO BITS OF THE FIRST OCTET ARE IMPORTANT!
+  // aside from just picking a number at random, use bitwise operations to set them as needed:
+  // "& 0xfe" : this ensures the I/G bit is "0" (unicast), which is kind of necessary for spoofing an AP.
+  //            the U/L bit is left to chance.
+  // "& 0xfc" : this ensures both the I/G bit and the U/L bit are "0" (unicast, universal).
+  // "& 0xfe | 0x02" : this ensures the I/G bit is "0", and the U/L bit is "1" (unicast, local).
+  randomSeed(uint32_t(randomMacSeed));
+  macAddr[0] = uint8_t(random(0x0, 0x100)) & 0xfe | 0x02 ; // use bitwise oparations to properly set the least significant bits
+  macAddr[1] = uint8_t(random(0x0, 0x100));
+  macAddr[2] = uint8_t(random(0x0, 0x100));
+  macAddr[3] = uint8_t(random(0x0, 0x100));
+  macAddr[4] = uint8_t(random(0x0, 0x100));
+  macAddr[5] = uint8_t(0x00); // this one gets assigned sequentially,
+                              // later on, when this mode is in use
+}
+
+void mayhemMac() {
+  // SEE COMMENTS, ABOVE
+  macAddr[0] = uint8_t(random(0x0, 0x100)) & 0xfe | 0x02 ; // SEE COMMENTS, ABOVE
+  macAddr[1] = uint8_t(random(0x0, 0x100));
+  macAddr[2] = uint8_t(random(0x0, 0x100));
+  macAddr[3] = uint8_t(random(0x0, 0x100));
+  macAddr[4] = uint8_t(random(0x0, 0x100));
+  macAddr[5] = uint8_t(random(0x0, 0x100));
+}
+
+///////////////////////////////
+void displayMacsSsids() {
+  // mac and ssid startup message
+  Serial.println("// MACs:                 SSIDs:");
+  ssidCount = sizeof(ssidList) / sizeof(ssidList[0]);
+  i = 0;
+  if (0 == macMode) {
+    // start macMode=0
+    randomMac();
+    for (i = 0; i < ssidCount; i++) {
+      yield(); // needed for extra-large lists
+      Serial.printf("     %02x:%02x:%02x:%02x:%02x:%02x     %s\n",
+        macAddr[0],
+        macAddr[1],
+        macAddr[2],
+        uint8_t(macAddr[3] + ((macAddr[4] + (i / 0x100)) / 0x100)), // rollover mac address for large ssid lists
+        uint8_t(macAddr[4] + (i / 0x100)),                          // rollover mac address for large ssid lists
+        uint8_t(i), // "i" bound by uint8 is effectively "i % 0x100", and it becomes "macAddr[5]"
+        ssidList[i]);
+        // end start macMode=0
+    }
+  } else {
+    // start macMode=1
+    randomSeed(uint32_t(randomMacSeed));
+    for (i = 0; i < ssidCount; i++) {
+      yield(); // needed for extra-large lists
+      mayhemMac();
+      Serial.printf("     %02x:%02x:%02x:%02x:%02x:%02x     %s\n",
+        macAddr[0], macAddr[1], macAddr[2], macAddr[3], macAddr[4], macAddr[5],
+        ssidList[i]);
+        // end macMode=1
+    }
   }
 }
 
-void setup() {
-  // create empty SSID
-  for (int i = 0; i < 32; i++)
-    emptySSID[i] = ' ';
 
-  // for random generator
-  randomSeed(os_random());
+void setup() {
+
+  // start serial
+  Serial.begin(115200);
+  //Initialize serial and wait for port to open:
+  while (!Serial) {
+    delay(10);
+  }
+  // wait for serial port to connect
+  delay(300);
+  Serial.println();
+
 
   // set packetSize
   packetSize = sizeof(beaconPacket);
@@ -183,117 +298,165 @@ void setup() {
     packetSize -= 26;
   }
 
-  // generate random mac address
-  randomMac();
-
-  // start serial
-  Serial.begin(115200);
-  Serial.println();
-
-  // get time
-  currentTime = millis();
 
   // start WiFi
-  WiFi.mode(WIFI_OFF);
+  //WiFi.mode(WIFI_AP_STA);
+  wifi_set_opmode(WIFI_OFF);
+  delay(1);
   wifi_set_opmode(STATION_MODE);
+  delay(1);
+
 
   // Set to default WiFi channel
+  wifi_channel = channels[0];
   wifi_set_channel(channels[0]);
+  delay(1);
 
-  // Display all saved WiFi SSIDs
-  Serial.println("SSIDs:");
-  int i = 0;
-  int len = sizeof(ssids);
-  while (i < len) {
-    Serial.print((char)pgm_read_byte(ssids + i));
-    i++;
-  }
 
-  Serial.println();
-  Serial.println("Started \\o/");
-  Serial.println();
+  ///////////////////////////////
+  // mac and ssid startup message
+  Serial.println("\n//// Atom Smasher's Beacon Spammer v1.3d ////\n");
+  displayMacsSsids();
+
+
+  // print misc startup info
+  Serial.printf("\n// randomMacSeed:        SSIDs:                Started in:\n     0x%08x            %-21d %4.3fs\n\n",
+    uint32_t(randomMacSeed), ssidCount, (uint32_t(millis()) * 0.001 ));
+
+
+  // for convenience, reportTime is configured in seconds, but it's processed in milli-seconds
+  reportTime *= 1000;
+  reportTime_fixed = reportTime;
+
+
+  macAddr_b[3] = macAddr[3]; // rollover safety
+  macAddr_b[4] = macAddr[4]; // rollover safety
+
 }
 
 void loop() {
-  currentTime = millis();
 
-  // send out SSIDs
-  if (currentTime - attackTime > 100) {
-    attackTime = currentTime;
+  if ((int32_t(micros() - sendPacketsLoopTime)) >= 0 ) {
 
-    // temp variables
-    int i = 0;
-    int j = 0;
-    int ssidNum = 1;
-    char tmp;
-    int ssidsLen = strlen_P(ssids);
-    bool sent = false;
-
-    // Go to next channel
     nextChannel();
 
-    while (i < ssidsLen) {
-      // Get the next SSID
-      j = 0;
-      do {
-        tmp = pgm_read_byte(ssids + i + j);
-        j++;
-      } while (tmp != '\n' && j <= 32 && i + j < ssidsLen);
+    ssidNum = 0;
 
-      uint8_t ssidLen = j - 1;
-
-      // set MAC address
-      macAddr[5] = ssidNum;
-      ssidNum++;
-
-      // write MAC address into beacon frame
-      memcpy(&beaconPacket[10], macAddr, 6);
-      memcpy(&beaconPacket[16], macAddr, 6);
-
-      // reset SSID
-      memcpy(&beaconPacket[38], emptySSID, 32);
-
-      // write new SSID into beacon frame
-      memcpy_P(&beaconPacket[38], &ssids[i], ssidLen);
-
-      // set channel for beacon frame
-      beaconPacket[82] = wifi_channel;
-
-      // send packet
-      if (appendSpaces) {
-        for (int k = 0; k < 3; k++) {
-          packetCounter += wifi_send_pkt_freedom(beaconPacket, packetSize, 0) == 0;
-          delay(1);
-        }
-      }
-
-      // remove spaces
-      else {
-
-        uint16_t tmpPacketSize = (packetSize - 32) + ssidLen; // calc size
-        uint8_t* tmpPacket = new uint8_t[tmpPacketSize]; // create packet buffer
-        memcpy(&tmpPacket[0], &beaconPacket[0], 38 + ssidLen); // copy first half of packet into buffer
-        tmpPacket[37] = ssidLen; // update SSID length byte
-        memcpy(&tmpPacket[38 + ssidLen], &beaconPacket[70], wpa2 ? 39 : 13); // copy second half of packet into buffer
-
-        // send packet
-        for (int k = 0; k < 3; k++) {
-          packetCounter += wifi_send_pkt_freedom(tmpPacket, tmpPacketSize, 0) == 0;
-          delay(1);
-        }
-
-        delete tmpPacket; // free memory of allocated buffer
-      }
-
-      i += j;
+    if (1 == macMode) {
+      randomSeed(uint32_t(randomMacSeed));
     }
+
+    // for each ssid ...
+    for (i = 0; i < ssidCount; i++) {
+
+        ///////////////
+        // if mayhemMac
+        if (1 == macMode) {
+          mayhemMac();
+        } else {
+          // classic mac mode
+          macAddr[3] = uint8_t(macAddr_b[3] + ((macAddr_b[4] + (ssidNum / 0x100)) / 0x100)); // gracefully handle >256 SSIDs
+          macAddr[4] = uint8_t(macAddr_b[4] + (ssidNum / 0x100));                            // gracefully handle >256 SSIDs
+          macAddr[5] = uint8_t(ssidNum);
+        }
+
+        ssidNum++;
+
+        // write MAC address into beacon frame
+        memcpy(&beaconPacket[10], macAddr, 6);
+        memcpy(&beaconPacket[16], macAddr, 6);
+
+        // write new SSID into beacon frame
+        memcpy_P(&beaconPacket[38], &ssidList[i], 0x20);
+
+        // set channel for beacon frame
+        beaconPacket[82] = wifi_channel;
+
+        // this while-loop ensures that beacons are actually being sent
+        // and it's a lot slower than not ensuring that beacons are actually being sent.
+        // to maintain 10 beacons per ssid per second per channel, the ssid list should be limited
+        // to about 70 ssids with wpa, or about 80 ssids without wpa; that's assuming only one channel is used
+        // larger lists of ssids will result in fewer than 10 beacons per ssid per second per channel.
+        // this really is the speed-bump in the whole process.
+        while (0 != wifi_send_pkt_freedom(beaconPacket, packetSize, 0)) {
+          yield();
+        }
+
+        // packet sent
+        packetCounter += 1;
+      }
+
+      sendPacketsLoopTime = sendPacketsLoopTime + throttle_loop;
+      if ((int32_t(micros() - sendPacketsLoopTime)) >= 0 ) {
+        sendPacketsLoopTime = micros();
+      }
   }
 
-  // show packet-rate each second
-  if (currentTime - packetRateTime > 1000) {
-    packetRateTime = currentTime;
-    Serial.print("Packets/s: ");
-    Serial.println(packetCounter);
-    packetCounter = 0;
-  }
+    // rolover notices
+    // micros() rolls over every           1h:11:34.967295
+    // millis() rolls over every 49 days, 17h:02:47.295
+    if (micros() < microsRollover) {
+      Serial.printf("[%.3f] *** micros() clock rollover\n", (millis() * 0.001));
+    }
+    microsRollover = micros();
+    //
+    if (millis() < millisRollover) {
+      Serial.printf("[%.3f] ****** millis() clock rollover\n", (millis() * 0.001));
+    }
+    millisRollover = millis();
+
+    // re-key ssids, if needed
+    if (0 < rekeyTime) {
+      if ((int32_t(millis() - rekeyTime)) >= 0) {
+        if (rekeyPRNG) {
+          // this may look "random", but it's very deterministic, and thus repeatable
+          randomMacSeed = (random() + random());
+          Serial.printf("[%.3f] New randomMacSeed: 0x%08x (PRNG)\n", // display the new randomMacSeed
+            (millis() * 0.001),
+            uint32_t(randomMacSeed));
+        } else {
+          // this is effectively "random" in the sense that it's non-deterministic
+          randomMacSeed = os_random();
+          Serial.printf("[%.3f] New randomMacSeed: 0x%08x (os_random)\n", // display the new randomMacSeed
+            (millis() * 0.001),
+            uint32_t(randomMacSeed));
+        }
+        if (0 == macMode) {
+          // rekey for classic mac-mode
+          randomMac();
+          macAddr_b[3] = macAddr[3]; // rollover safety for <256 ssids
+          macAddr_b[4] = macAddr[4]; // rollover safety for <256 ssids
+        }
+        // with absurdly huge ssid lists, it may be best to comment out the next line,
+        // and NOT display them at a rate that's limited by the serial port speed
+        displayMacsSsids(); // display all new ssids and their new mac addresses
+
+        rekeyTime += rekeyTime_fixed;
+        if ((int32_t(millis() - rekeyTime)) >= 0 ) {
+          rekeyTime = millis();
+        }
+      }
+    }
+
+    // show packet-rate every n seconds
+    // if this gets delayed by a huge ssid list, or something, it will still report accurate numbers
+    packetRateTime_tmp = millis();
+    if (0 < reportTime) {
+      if ((int32_t(millis() - reportTime)) >= 0 ) {
+        // the percent display here is percent of full speed; that's 10 beacons per second, per ssid, per channel
+        Serial.printf("[%.3f] %.2f packets/s, %5.1f%%\n",
+          (millis() * 0.001),
+          (float((packetCounter * 1000.0) / int32_t(packetRateTime_tmp - packetRateTime) )),
+          (float((packetCounter * 10000.0) / int32_t(packetRateTime_tmp - packetRateTime) ) / ssidCount / (sizeof(channels))));
+        packetRateTime = packetRateTime_tmp;
+        packetCounter = 0;
+        reportTime += reportTime_fixed;
+        if ((int32_t(millis() - reportTime)) >= 0 ) {
+          reportTime = millis();
+        }
+        // this line, if enabled, shows the current time (millis()) in HEX and DEC, and the time the next report is due, in HEX and DEC
+        //Serial.printf("         reportTime: 0x%08x, %010u --> 0x%08x, %010u\n", millis(), millis(),  reportTime, reportTime);
+      }
+    }
+
 }
